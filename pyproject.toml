@@ -1,0 +1,87 @@
+[project]
+name = "agentville"
+version = "0.1.0"
+description = "AgentVille: a training ground where AI agents must earn a living to stay alive."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "sqlalchemy>=2.0",
+    "alembic>=1.13",
+    "pydantic>=2.7",
+    "pydantic-settings>=2.3",
+    "pyyaml>=6.0",
+    "httpx>=0.27",
+    "typer>=0.12",
+    "jinja2>=3.1",
+    "jsonschema>=4.22",
+    "websockets>=12.0",
+    "docker>=7.1",
+]
+
+[project.scripts]
+agentville = "agentville.cli.main:app"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.2",
+    "pytest-asyncio>=0.23",
+    "hypothesis>=6.103",
+    "pytest-socket>=0.7",
+    "ruff>=0.4",
+    "mypy>=1.10",
+    "types-PyYAML",
+    "types-jsonschema",
+    "schemathesis>=3.0",
+    "matplotlib>=3.8",
+    "scipy>=1.13",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/agentville"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+addopts = "-q"
+markers = [
+  "phase0: Phase 0 gate (foundations)",
+  "phase1: Phase 1 gate (engine core)",
+  "phase2: Phase 2 gate (LLM gateway + mind)",
+  "phase3: Phase 3 gate (verification + sandbox)",
+  "phase4: Phase 4 gate (learning + lifecycle)",
+  "phase5: Phase 5 gate (Experiment 01)",
+  "phase6: Phase 6 gate (API + Control Room)",
+  "phase7: Phase 7 gate (web study, exams, export)",
+  "phase8: Phase 8 gate (roles + scale)",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["E501"]
+
+[tool.mypy]
+strict = true
+python_version = "3.12"
+mypy_path = "src"
+packages = ["agentville"]
+exclude = ["control-room", "data", "alembic"]
+
+[[tool.mypy.overrides]]
+module = ["docker.*", "schemathesis.*"]
+ignore_missing_imports = true
+
+[tool.coverage.run]
+source = ["src/agentville"]

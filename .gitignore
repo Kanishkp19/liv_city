@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+.venv/
+.env
+data/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+node_modules/
+control-room/dist/
+*.db

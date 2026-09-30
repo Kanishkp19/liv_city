@@ -1,0 +1,42 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: agentville
+      POSTGRES_PASSWORD: agentville
+      POSTGRES_DB: agentville
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U agentville"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build: .
+    command: uvicorn agentville.api.main:app --host 127.0.0.1 --port 8000
+    env_file: .env
+    environment:
+      AV_DB_URL: postgresql+psycopg://agentville:agentville@db:5432/agentville
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./data:/app/data
+
+  control-room:
+    image: node:22-alpine
+    working_dir: /app
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - ./control-room:/app
+    depends_on:
+      - api
+
+volumes:
+  db-data:
