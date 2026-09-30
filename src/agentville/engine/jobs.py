@@ -6,6 +6,8 @@ import json
 from typing import Any
 
 from agentville.engine.types import JobSpec, JobStatus, VerifierRecipe
+
+__all__ = ["JobBoard", "JobError", "JobGenerator", "JobTemplate", "JobStatus", "dumps_visible"]
 from agentville.engine.world import World
 from agentville.rng import derive_rng
 

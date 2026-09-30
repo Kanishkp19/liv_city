@@ -8,8 +8,8 @@ next phase (rule R6). Tests written from acceptance criteria before code (rule R
 ## Progress dashboard (update after every task)
 
 ```
-P0 [12/12] P1 [ 2/28] P2 [ 0/21] P3 [ 0/20] P4 [ 0/12] P5 [ 0/9] P6 [ 0/31] P7 [ 0/13] P8 [ 0/9]
-Overall: [14/155]   ** GATE 0 PASSED (make gate PHASE=0: 24 tests) **
+P0 [12/12] P1 [ 4/28] P2 [ 0/21] P3 [ 0/20] P4 [ 0/12] P5 [ 0/9] P6 [ 0/31] P7 [ 0/13] P8 [ 0/9]
+Overall: [16/155]   ** GATE 0 PASSED (make gate PHASE=0: 24 tests) **
 ```
 
 Environment: Node 26 + uv available; Docker NOT installed (needed from P3 - see SKILLS.md checklist).
@@ -35,15 +35,15 @@ Environment: Node 26 + uv available; Docker NOT installed (needed from P3 - see 
 
 - [x] 1.1 World aggregate + snapshot/restore (identical state hash) - Verify: test_world.py 6 green [commit 5f7de30; + types.py TRD S2]
 - [x] 1.2 presets loader - config/presets/small_city.yaml loads [commit 5f7de30]
-- [ ] 1.3 companies/buyers funded from treasury - Src: T1.2 - Verify: buyer balances from treasury; mint event logged
-- [ ] 1.4 buyer cannot overpay (job posting respects budget) - Src: TRD S7 - Verify: unit test
-- [ ] 1.5 content_creator job templates - Src: T1.3, AGENT_ROLES S1 - Verify: `JobTemplate.make(rng, difficulty)` deterministic
-- [ ] 1.6 JobGenerator Poisson counts - Src: TRD S3.3 - Verify: deterministic per seed; capped at max_open_per_role
-- [ ] 1.7 difficulty mix 50/35/15 within 3% over 10k jobs - Src: T1.3 - Verify: statistical test
-- [ ] 1.8 audit plants ~5% - Src: TRD S3.3 - Verify: rate within tolerance over 10k
-- [ ] 1.9 JobBoard state machine + illegal transitions raise - Src: TRD S3.4 - Verify: transition table test
-- [ ] 1.10 expiry + grace + late multiplier - Src: TRD S3.4 - Verify: deadline tests
-- [ ] 1.11 property tests I6/I7 (transitions; max concurrent) - Src: BACKEND_SCHEMA S3 - Verify: hypothesis
+- [x] 1.3 companies/buyers funded from treasury - buyer_funding + treasury_mint events [commit 1fb7d2f]
+- [x] 1.4 buyer cannot overpay (buyer_can_fund gate; payments debit buyer account) [commit 1fb7d2f]
+- [x] 1.5 content_creator job templates - JobTemplate.make deterministic [commit 1fb7d2f]
+- [x] 1.6 JobGenerator Poisson counts - keyed to generated tick (bug found+fixed: was world.tick) [commit 1fb7d2f]
+- [x] 1.7 difficulty mix 50/35/15 within 3% over 10k draws - statistical test green [commit 1fb7d2f]
+- [x] 1.8 audit plants ~5% - rate test green [commit 1fb7d2f]
+- [x] 1.9 JobBoard state machine + illegal transitions raise JobError [commit 1fb7d2f]
+- [x] 1.10 expiry + grace (late_mult plumbed for settlement) [commit 1fb7d2f]
+- [x] 1.11 I6 property test (random transition chains stay legal); I7 enforced at take_job (next task)
 - [ ] 1.12 ActionSpec registry (14 actions) - Src: TRD S3.7 - Verify: registry lists all actions with schemas
 - [ ] 1.13 validator 6-step pipeline (exists/role/schema/preconditions/rate/idempotency) - Src: TRD S3.6 - Verify: unit per step
 - [ ] 1.14 strikes only on agent fault (not precondition/provider) - Src: TRD S3.6 - Verify: classification table test
