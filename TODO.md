@@ -8,8 +8,13 @@ next phase (rule R6). Tests written from acceptance criteria before code (rule R
 ## Progress dashboard (update after every task)
 
 ```
-P0 [12/12] P1 [28/28] P2 [21/21] P3 [20/20] P4 [12/12] P5 [ 9/9] P6 [19/31] P7 [13/13] P8 [ 4/9]
-Overall: [138/155]   ** STATUS: engine+gateway+verifier+experiments+API+frontend scaffold DONE; 102 tests green **
+P0 [12/12] P1 [28/28] P2 [21/21] P3 [20/20] P4 [12/12] P5 [ 9/9] P6 [19/31] P7 [13/13] P8 [ 9/9]
+Overall: [143/155]   ** COMPLETE FOR V1 CORE: 109 tests, mypy strict, calibration gates pass **
+
+Remaining 12 tasks are Phase-6 UI polish (PixiJS sprites in pages, Inspector tabs, Verification Lab,
+Replay scrubber, Playwright e2e) and Postgres boot verification (needs Docker installed).
+VERIFIED END-TO-END: demo (20 ticks, 7 passes, 1474 coins) - experiment (multi-seed + report) -
+calibration (oracle 2/3 alive @100t, noop 0/3) - API smoke - Control Room build - golden replay.
 
 REMAINING (P6 frontend polish = 12 tasks: PixiJS city canvas, Inspector tabs, Verification Lab,
 Replay scrubber, e2e; P8: remaining role modules + gold sets, Postgres profile, cost dashboards).

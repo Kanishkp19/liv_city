@@ -1,6 +1,7 @@
 services:
   db:
     image: postgres:16-alpine
+    profiles: [postgres]
     environment:
       POSTGRES_USER: agentville
       POSTGRES_PASSWORD: agentville

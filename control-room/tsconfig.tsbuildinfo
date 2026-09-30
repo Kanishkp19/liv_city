@@ -1,1 +1,1 @@
-{"root":["./src/main.tsx","./src/components/appshell.tsx","./src/pages/agentinspector.tsx","./src/pages/economy.tsx","./src/pages/jobs.tsx","./src/pages/livecity.tsx","./src/pages/replay.tsx","./src/pages/systemhealth.tsx"],"version":"5.9.3"}
+{"root":["./src/main.tsx","./src/components/appshell.tsx","./src/components/citycanvas.tsx","./src/pages/agentinspector.tsx","./src/pages/economy.tsx","./src/pages/jobs.tsx","./src/pages/livecity.tsx","./src/pages/replay.tsx","./src/pages/systemhealth.tsx"],"version":"5.9.3"}
