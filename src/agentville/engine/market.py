@@ -2,17 +2,42 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from agentville.engine.events import EventLog
 from agentville.engine.ledger import LedgerWriter
 from agentville.engine.world import World
 
 
-def seed_companies_and_buyers(world: World, ledger: LedgerWriter, events: EventLog) -> None:
+def _persist_buyers(session: Any, world: World, buyer_specs: list[tuple[str, str]]) -> None:
+    """Insert companies/buyers rows (FK targets for jobs)."""
+    from sqlalchemy import text as sql_text
+
+    seen: set[str] = set()
+    for bid, cid in buyer_specs:
+        if cid not in seen:
+            seen.add(cid)
+            session.execute(
+                sql_text("INSERT OR IGNORE INTO companies (id, world_id, name, sector, budget) VALUES (:i, :w, :n, :s, :b)"),
+                {"i": cid, "w": world.id, "n": f"Company {cid}", "s": "media", "b": 0},
+            )
+        session.execute(
+            sql_text(
+                "INSERT OR IGNORE INTO buyers (id, world_id, company_id, name, persona_json, quality_bar, roles_json) "
+                "VALUES (:i, :w, :c, :n, '{}', 0.7, '[\"content_creator\"]')"
+            ),
+            {"i": bid, "w": world.id, "c": cid, "n": f"Buyer {bid}"},
+        )
+    session.flush()
+
+
+def seed_companies_and_buyers(world: World, ledger: LedgerWriter, events: EventLog, session: Any = None) -> None:
     """Create companies+buyers from preset config, funded from treasury (buyer:<id> accounts)."""
     cfg = world.config.get("buyers", {})
     n_companies = int(cfg.get("companies", 4))
     per_company = int(cfg.get("buyers_per_company", 2))
     initial = int(cfg.get("initial_budget", 5_000))
+    buyer_specs: list[tuple[str, str]] = []
     # ensure treasury is funded (mint logged once)
     if ledger.balance("treasury") < n_companies * per_company * initial:
         mint = n_companies * per_company * initial
@@ -28,10 +53,13 @@ def seed_companies_and_buyers(world: World, ledger: LedgerWriter, events: EventL
                 amount=initial, reason="buyer_funding", ref_type="buyer", ref_id=bid,
             )
             world.accounts[f"buyer:{bid}"] = initial
+            buyer_specs.append((bid, cid))
             events.emit(
                 world.id, tick=world.tick, type_="buyer_funded", agent_id=None,
                 payload={"buyer_id": bid, "company_id": cid, "amount": initial},
             )
+    if session is not None:
+        _persist_buyers(session, world, buyer_specs)
 
 
 def buyer_can_fund(world: World, buyer_id: str, reward: int) -> bool:
