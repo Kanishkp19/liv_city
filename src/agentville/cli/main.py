@@ -125,6 +125,28 @@ def replay(
 
 
 @app.command()
+def experiment(
+    seeds: str = typer.Option("11,22,33,44,55", help="Comma-separated seeds"),
+    ticks: int = typer.Option(150),
+    mock: str = typer.Option("oracle"),
+    out: str = typer.Option("reports/exp01.md"),
+) -> None:
+    """Run Experiment 01 across seeds and render the report."""
+    from pathlib import Path
+
+    from agentville.reports.experiment import render_report, run_experiment
+
+    seed_list = [int(x) for x in seeds.split(",") if x.strip()]
+    engine, session = _open_session(None)
+    try:
+        result = run_experiment(session, seed_list, ticks)
+        path = render_report(result, Path(out))
+        typer.echo(f"experiment done: {len(seed_list)} seeds x {ticks} ticks -> {path}")
+    finally:
+        engine.dispose()
+
+
+@app.command()
 def demo(ticks: int = typer.Option(20)) -> None:
     """make demo: fresh world + oracle agents + report."""
     from agentville.engine.mocks import MockMind

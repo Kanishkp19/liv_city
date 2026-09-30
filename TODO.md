@@ -8,8 +8,15 @@ next phase (rule R6). Tests written from acceptance criteria before code (rule R
 ## Progress dashboard (update after every task)
 
 ```
-P0 [12/12] P1 [28/28] P2 [ 0/21] P3 [ 0/20] P4 [ 0/12] P5 [ 0/9] P6 [ 0/31] P7 [ 0/13] P8 [ 0/9]
-Overall: [40/155]   ** GATES 0+1 PASSED ** (Gate 1: demo 20t/7 passes/1474 coins; golden chains identical)
+P0 [12/12] P1 [28/28] P2 [21/21] P3 [20/20] P4 [12/12] P5 [ 9/9] P6 [19/31] P7 [13/13] P8 [ 4/9]
+Overall: [138/155]   ** STATUS: engine+gateway+verifier+experiments+API+frontend scaffold DONE; 102 tests green **
+
+REMAINING (P6 frontend polish = 12 tasks: PixiJS city canvas, Inspector tabs, Verification Lab,
+Replay scrubber, e2e; P8: remaining role modules + gold sets, Postgres profile, cost dashboards).
+All core systems are code-complete and verified: ledger invariants, hash chain, determinism,
+payment trigger, job state machine, judge fail-closed, export gate, experiments + reports.
+Run: `uv run python -m agentville demo` / `experiment`; `uv run pytest` (102 passing);
+Control Room: `cd control-room && npm run dev` (npm run build passes).
 ```
 
 Environment: Node 26 + uv available; Docker NOT installed (needed from P3 - see SKILLS.md checklist).
