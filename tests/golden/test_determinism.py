@@ -10,8 +10,9 @@ from agentville.engine.scheduler import Scheduler
 
 
 def _run(seed: int, ticks: int) -> tuple[str, int]:
-    from agentville.db.session import make_engine
     from sqlalchemy.orm import Session
+
+    from agentville.db.session import make_engine
 
     eng = make_engine("sqlite://", apply_triggers=True)
     try:
