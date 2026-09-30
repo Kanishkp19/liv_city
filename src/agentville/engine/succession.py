@@ -54,12 +54,13 @@ def _maybe_pivot(
     open_per_role: dict[str, int],
     agents_per_role: dict[str, int],
 ) -> str | None:
-    """Pivot if dead role's mean earnings/tick < 25th pct of roles and a role has surplus >2."""
-    if not role_earnings:
+    """Pivot if dead role's mean earnings/tick is below the 25th pct of OTHER roles
+    and some role has job surplus (open/agents > 2) - docs AGENT_ROLES S6."""
+    others = sorted(v for r, v in role_earnings.items() if r != dead_role)
+    if not others:
         return None
-    values = sorted(role_earnings.values())
-    idx = max(0, int(0.25 * (len(values) - 1)))
-    p25 = values[idx]
+    idx = max(0, int(0.25 * (len(others) - 1)))
+    p25 = others[idx]
     if role_earnings.get(dead_role, 0) >= p25:
         return None
     best: tuple[str, float] | None = None

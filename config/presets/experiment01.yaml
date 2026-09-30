@@ -1,0 +1,13 @@
+name: experiment01
+seeds: [11, 22, 33, 44, 55]
+ticks: 150
+districts: [housing, office, studio, market, bank, library]
+world: {tick_timeout_s: 90, llm_concurrency: 4, snapshot_every: 1}
+economy_ref: economy.yaml
+same_job_stream_across_groups: true
+agents:
+  - {role: content_creator, group: control_a, count: 3}
+  - {role: content_creator, group: control_b, count: 3}
+  - {role: content_creator, group: control_c, count: 3}
+  - {role: content_creator, group: learner, count: 3}
+buyers: {companies: 4, buyers_per_company: 2, initial_budget: 5000}
