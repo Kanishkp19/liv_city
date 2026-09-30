@@ -8,7 +8,7 @@ from typing import Any
 
 from agentville.clock import Clock
 from agentville.config import Economy
-from agentville.engine.types import AgentState, Coins
+from agentville.engine.types import AgentState, Coins, JobSpec
 from agentville.ids import IdGen
 from agentville.rng import derive_rng
 
@@ -25,6 +25,7 @@ class World:
     economy: Economy | None = None
     config: dict[str, Any] = field(default_factory=dict)
     agents: dict[str, AgentState] = field(default_factory=dict)
+    jobs: dict[str, JobSpec] = field(default_factory=dict)
     # account -> coins, mirrored to ledger; cached for fast checks
     accounts: dict[str, Coins] = field(default_factory=dict)
     clock: Clock = field(default_factory=Clock)
@@ -55,6 +56,7 @@ class World:
                 aid: json.loads(a.model_dump_json())
                 for aid, a in sorted(self.agents.items())
             },
+            "jobs": {jid: json.loads(j.model_dump_json()) for jid, j in sorted(self.jobs.items())},
             "accounts": dict(sorted(self.accounts.items())),
         }
 
@@ -74,6 +76,10 @@ class World:
         self.agents = {
             aid: AgentState.model_validate(a)
             for aid, a in state["agents"].items()
+        }
+        self.jobs = {
+            jid: JobSpec.model_validate(j)
+            for jid, j in state["jobs"].items()
         }
         self.clock = Clock(tick=self.tick)
         ids = IdGen()

@@ -8,8 +8,8 @@ next phase (rule R6). Tests written from acceptance criteria before code (rule R
 ## Progress dashboard (update after every task)
 
 ```
-P0 [12/12] P1 [ 0/28] P2 [ 0/21] P3 [ 0/20] P4 [ 0/12] P5 [ 0/9] P6 [ 0/31] P7 [ 0/13] P8 [ 0/9]
-Overall: [12/155]   ** GATE 0 PASSED (make gate PHASE=0: 24 tests) **
+P0 [12/12] P1 [ 2/28] P2 [ 0/21] P3 [ 0/20] P4 [ 0/12] P5 [ 0/9] P6 [ 0/31] P7 [ 0/13] P8 [ 0/9]
+Overall: [14/155]   ** GATE 0 PASSED (make gate PHASE=0: 24 tests) **
 ```
 
 Environment: Node 26 + uv available; Docker NOT installed (needed from P3 - see SKILLS.md checklist).
@@ -33,8 +33,8 @@ Environment: Node 26 + uv available; Docker NOT installed (needed from P3 - see 
 
 ## Phase 1 - Engine core, no LLM (Gate: oracle >=90% survival @100 ticks; noop dead <=25; golden hash stable)
 
-- [ ] 1.1 World aggregate + snapshot/restore (identical state hash) - Src: T1.1
-- [ ] 1.2 presets loader - Src: T1.1, CONFIG_REFERENCE - Verify: preset YAML loads into World
+- [x] 1.1 World aggregate + snapshot/restore (identical state hash) - Verify: test_world.py 6 green [commit 5f7de30; + types.py TRD S2]
+- [x] 1.2 presets loader - config/presets/small_city.yaml loads [commit 5f7de30]
 - [ ] 1.3 companies/buyers funded from treasury - Src: T1.2 - Verify: buyer balances from treasury; mint event logged
 - [ ] 1.4 buyer cannot overpay (job posting respects budget) - Src: TRD S7 - Verify: unit test
 - [ ] 1.5 content_creator job templates - Src: T1.3, AGENT_ROLES S1 - Verify: `JobTemplate.make(rng, difficulty)` deterministic
