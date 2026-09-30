@@ -1,0 +1,9 @@
+providers:
+  - {id: freellm_a, kind: freellmapi, model: "model-a", rpm: 15, tpm: 200000, tier: 1, judge_ok: true}
+  - {id: freellm_b, kind: freellmapi, model: "model-b", rpm: 10, tpm: 150000, tier: 1, judge_ok: true}
+  - {id: freellm_c, kind: freellmapi, model: "model-c", rpm: 10, tpm: 100000, tier: 2, judge_ok: true}
+  - {id: local, kind: ollama, model: "llama3.1:8b", rpm: 60, tpm: 999999, tier: 9, judge_ok: false}
+router:
+  strategy: weighted_health
+  fallback_order: [tier1, tier2, local]
+  judge_distinct_providers: true

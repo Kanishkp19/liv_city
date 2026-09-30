@@ -1,0 +1,6 @@
+content_creator:
+  title: "Short-form content creator"
+  allowed_actions: [take_job, work_on, submit_work, write_note, update_playbook, save_skill, run_skill, study_web, buy_item, rest, eat, request_exam, quit_job, noop]
+  artifact_kind: json
+  verifier_recipes: {1: content_easy, 2: content_medium, 3: content_hard}
+  job_templates: [hook_script, product_teaser, explainer_short]

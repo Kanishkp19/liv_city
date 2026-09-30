@@ -8,8 +8,8 @@ next phase (rule R6). Tests written from acceptance criteria before code (rule R
 ## Progress dashboard (update after every task)
 
 ```
-P0 [ 0/12] P1 [ 0/28] P2 [ 0/21] P3 [ 0/20] P4 [ 0/12] P5 [ 0/9] P6 [ 0/31] P7 [ 0/13] P8 [ 0/9]
-Overall: [ 0/155]
+P0 [ 1/12] P1 [ 0/28] P2 [ 0/21] P3 [ 0/20] P4 [ 0/12] P5 [ 0/9] P6 [ 0/31] P7 [ 0/13] P8 [ 0/9]
+Overall: [ 1/155]
 ```
 
 Environment: Node 26 + uv available; Docker NOT installed (needed from P3 - see SKILLS.md checklist).
@@ -18,7 +18,7 @@ Environment: Node 26 + uv available; Docker NOT installed (needed from P3 - see 
 
 ## Phase 0 - Foundations (Gate: `make gate PHASE=0`; invariants I1/I2/I3/I8)
 
-- [ ] 0.1 pyproject.toml (deps per TRD S1), Makefile, .env.example, .gitignore - Src: T0.1, CONFIG_REFERENCE - Verify: `uv sync` resolves; `make test lint` green
+- [x] 0.1 pyproject.toml (deps per TRD S1), Makefile, .env.example, .gitignore - Src: T0.1, CONFIG_REFERENCE - Verify: `uv sync` resolves; `make test lint` green [COMMIT b3253a0]
 - [ ] 0.2 Skeleton dirs matching TRD S1 layout with __init__.py - Src: TRD S1 - Verify: spot-check tree
 - [ ] 0.3 ruff + mypy strict config - Src: AGENTS.md - Verify: `make lint` exits 0
 - [ ] 0.4 docker-compose.yml + GitHub Actions CI workflow - Src: T0.1, TESTING - Verify: YAML parses (full `docker compose config` deferred until Docker installed [!])

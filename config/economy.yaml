@@ -1,0 +1,23 @@
+starting_funds: 500
+successor_funds: 300
+rent_per_tick: 20
+food_per_tick: 10
+auto_eat: false
+energy: {max: 100, rest_gain: 30, idle_regen: 5, work_cost_per_effort: 5}
+job_rewards: {1: 40, 2: 90, 3: 200}
+job_rate: 1.5
+max_open_per_role: 12
+max_concurrent_jobs: 1
+deadline_ticks: {1: 4, 2: 6, 3: 10}
+late_grace_ticks: 1
+late_multiplier: 0.7
+quality_tiers: [[0.9, 1.25], [0.75, 1.0], [0.6, 0.6], [0.0, 0.0]]
+reputation_delta: {excellent: 3, good: 1, ok: 0, fail: -5, expired: -8, quit: -5}
+min_reputation_by_difficulty: {1: 0, 2: 30, 3: 60}
+study_cost: 5
+audit_rate: 0.05
+buyer_topup: {floor_money_supply_ratio: 0.8, amount_per_buyer: 500}
+market_items:
+  - {id: better_mic, price: 150, effect: {quality_cap_bonus: 0.05, roles: [content_creator]}}
+  - {id: research_sub, price: 100, effect: {study_cost: 0}}
+  - {id: ergonomic_desk, price: 200, effect: {work_energy_discount: 1}}

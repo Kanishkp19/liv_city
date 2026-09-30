@@ -1,0 +1,4 @@
+panel_size: 3
+disagreement_threshold: 0.35
+rubrics:
+  content_hook_v1: judge_rubrics/content_hook_v1.yaml

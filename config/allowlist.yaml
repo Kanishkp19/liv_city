@@ -1,0 +1,3 @@
+domains: [wikipedia.org, docs.python.org, developer.mozilla.org, arxiv.org]
+max_bytes: 1048576
+rate_per_agent_per_tick: 1
