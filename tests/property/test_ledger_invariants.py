@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import pytest
+
 from hypothesis import given
 from hypothesis import strategies as st
 from sqlalchemy import func, select
@@ -9,6 +11,8 @@ from sqlalchemy.orm import Session
 
 from agentville.db.models import LedgerEntry, World
 from agentville.engine.ledger import LedgerError, LedgerWriter
+
+pytestmark = pytest.mark.phase0
 
 
 def _world(s: Session) -> None:

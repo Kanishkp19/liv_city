@@ -5,6 +5,8 @@ from __future__ import annotations
 import json
 
 import pytest
+
+import pytest
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -19,6 +21,8 @@ from agentville.db.models import (
     LedgerEntry,
     World,
 )
+
+pytestmark = pytest.mark.phase0
 
 
 def _world(s: Session) -> World:

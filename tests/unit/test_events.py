@@ -3,11 +3,15 @@
 from __future__ import annotations
 
 import pytest
+
+import pytest
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session
 
 from agentville.db.models import World
 from agentville.engine.events import EventLog
+
+pytestmark = pytest.mark.phase0
 
 
 @pytest.fixture()
