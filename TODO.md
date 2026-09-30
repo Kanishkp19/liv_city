@@ -8,8 +8,8 @@ next phase (rule R6). Tests written from acceptance criteria before code (rule R
 ## Progress dashboard (update after every task)
 
 ```
-P0 [ 1/12] P1 [ 0/28] P2 [ 0/21] P3 [ 0/20] P4 [ 0/12] P5 [ 0/9] P6 [ 0/31] P7 [ 0/13] P8 [ 0/9]
-Overall: [ 1/155]
+P0 [ 2/12] P1 [ 0/28] P2 [ 0/21] P3 [ 0/20] P4 [ 0/12] P5 [ 0/9] P6 [ 0/31] P7 [ 0/13] P8 [ 0/9]
+Overall: [ 2/155]
 ```
 
 Environment: Node 26 + uv available; Docker NOT installed (needed from P3 - see SKILLS.md checklist).
@@ -22,7 +22,7 @@ Environment: Node 26 + uv available; Docker NOT installed (needed from P3 - see 
 - [ ] 0.2 Skeleton dirs matching TRD S1 layout with __init__.py - Src: TRD S1 - Verify: spot-check tree
 - [ ] 0.3 ruff + mypy strict config - Src: AGENTS.md - Verify: `make lint` exits 0
 - [ ] 0.4 docker-compose.yml + GitHub Actions CI workflow - Src: T0.1, TESTING - Verify: YAML parses (full `docker compose config` deferred until Docker installed [!])
-- [ ] 0.5 config.py + config/*.yaml defaults + AV_ env overrides - Src: T0.2, CONFIG_REFERENCE - Verify: `pytest tests/unit/test_config.py` (invalid YAML raises clear error; defaults load)
+- [x] 0.5 config.py + config/*.yaml defaults + AV_ env overrides - Src: T0.2, CONFIG_REFERENCE - Verify: `pytest tests/unit/test_config.py` (invalid YAML raises clear error; defaults load) [COMMIT 18fba36]
 - [ ] 0.6 rng.py DeterministicRNG - Src: TRD S5 - Verify: unit + hypothesis purpose-independence
 - [ ] 0.7 ids.py counter IdGen - Src: TRD S5 - Verify: format/monotonic/per-world tests
 - [ ] 0.8 clock.py injected Clock - Src: TRD S1 - Verify: unit test; grep engine/ for random/time.time/uuid4 = 0 hits
