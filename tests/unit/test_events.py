@@ -3,8 +3,6 @@
 from __future__ import annotations
 
 import pytest
-
-import pytest
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session
 

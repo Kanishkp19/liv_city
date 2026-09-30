@@ -5,8 +5,6 @@ from __future__ import annotations
 import json
 
 import pytest
-
-import pytest
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 

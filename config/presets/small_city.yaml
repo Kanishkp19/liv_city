@@ -1,0 +1,7 @@
+name: small_city
+districts: [housing, office, studio, market, bank, library]
+world: {tick_timeout_s: 90, llm_concurrency: 4, snapshot_every: 1}
+economy_ref: economy.yaml
+agents:
+  - {role: content_creator, group: learner, count: 3}
+buyers: {companies: 4, buyers_per_company: 2, initial_budget: 5000}
