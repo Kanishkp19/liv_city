@@ -23,8 +23,13 @@ def test_default_yaml_loads_with_defaults() -> None:
 
 def test_providers_yaml_loads() -> None:
     provs = load_providers()
-    assert len(provs.providers) == 4
+    assert len(provs.providers) == 3
     assert provs.router.judge_distinct_providers is True
+    # primary provider must be a live keyless endpoint with reasoning headroom
+    primary = next(p for p in provs.providers if p.id == "kilo_code")
+    assert primary.model == "cohere/north-mini-code:free"
+    assert primary.max_tokens == 3000
+    assert (primary.base_url or "").startswith("https://api.kilo.ai")
 
 
 def test_invalid_yaml_raises_clear_error(tmp_path: Path) -> None:

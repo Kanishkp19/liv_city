@@ -90,6 +90,7 @@ class ProviderCfg(BaseModel):
     kind: Literal["freellmapi", "ollama", "mock"]
     model: str
     base_url: str | None = None  # explicit endpoint wins over env fallback
+    max_tokens: int | None = None  # per-provider override (reasoning models need headroom)
     rpm: int = Field(ge=1)
     tpm: int = Field(ge=1)
     tier: int

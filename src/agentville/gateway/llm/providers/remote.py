@@ -14,6 +14,12 @@ class EmptyContentError(RuntimeError):
     """Model returned no usable content (e.g. reasoning ate the max_tokens budget)."""
 
 
+class RemoteRateLimitError(RuntimeError):
+    """429 from the remote endpoint; carries Retry-After for the token bucket."""
+
+    retry_after: float | None = None
+
+
 class RemoteProvider:
     """Talks to an OpenAI-compatible chat/completions endpoint."""
 
@@ -21,6 +27,7 @@ class RemoteProvider:
         self.id = cfg.id
         self.model = cfg.model
         self.kind = cfg.kind
+        self.max_tokens = getattr(cfg, "max_tokens", None)
         explicit = getattr(cfg, "base_url", None)
         if cfg.kind == "ollama":
             self.base_url = explicit or os.environ.get("OLLAMA_URL", "http://localhost:11434") + "/v1"
@@ -41,15 +48,20 @@ class RemoteProvider:
                 {"role": "user", "content": req.user},
             ],
             "temperature": req.temperature,
-            "max_tokens": req.max_tokens,
+            "max_tokens": getattr(self, "max_tokens", None) or req.max_tokens,
         }
         if req.json_mode:
             payload["response_format"] = {"type": "json_object"}
-        async with httpx.AsyncClient(timeout=30) as client:
+        async with httpx.AsyncClient(timeout=60) as client:
             r = await client.post(f"{self.base_url}/chat/completions", json=payload, headers=headers)
             if r.status_code == 429:
-                retry_after = float(r.headers.get("Retry-After", "5"))
-                raise RuntimeError(f"429 rate limited (retry_after={retry_after})")
+                retry_after = r.headers.get("Retry-After")
+                err = RemoteRateLimitError(
+                    f"429 rate limited (retry_after={retry_after or '5'})"
+                )
+                if retry_after:
+                    err.retry_after = float(retry_after)
+                raise err
             if r.status_code == 404:
                 raise RuntimeError("404 model not found")
             r.raise_for_status()

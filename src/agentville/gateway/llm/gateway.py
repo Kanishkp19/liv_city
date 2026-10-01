@@ -97,7 +97,10 @@ class LLMGateway:
                 result: LLMResponse = resp
                 return result
             except Exception as e:  # noqa: BLE001
-                bucket.record_error(not_found="404" in str(e) or "not found" in str(e).lower())
+                bucket.record_error(
+                    retry_after=getattr(e, "retry_after", None),
+                    not_found="404" in str(e) or "not found" in str(e).lower(),
+                )
                 errors.append(f"{pid}: {e}")
                 self._log(req, None, provider=pid, error=str(e))
         raise ProviderUnavailable("; ".join(errors) or "no providers")

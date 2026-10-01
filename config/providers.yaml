@@ -1,13 +1,14 @@
-# Live LLM providers (docs/LLM_GATEWAY.md). kilo + llm7 need NO API key (keyless free tiers).
-# Env overrides: FREELLMAPI_URL / FREELLMAPI_KEY (kilo), LLM7_URL / LLM7_API_KEY (llm7),
-# OLLAMA_URL (local). Kilo routes to a free-model pool; llm7 turbo tier is anonymous-access.
+# Live LLM providers (docs/LLM_GATEWAY.md). All keyless (no signup).
+# kilo_code = Kilo gateway pinned to cohere/north-mini-code:free. It is a REASONING
+# model: needs max_tokens headroom (3000) or reasoning eats the budget (content=null,
+# finish=length). llm7 = mistral-Nemo-Instruct-2407 (json_mode:true, non-reasoning).
+# local = ollama fallback if installed. Gateway routes in sorted-id order:
+# kilo_code, llm7, local. Env overrides: FREELLMAPI_URL / FREELLMAPI_KEY, OLLAMA_URL.
 providers:
-  - {id: kilo, kind: freellmapi, model: "openrouter/free", base_url: "https://api.kilo.ai/api/gateway",
-     rpm: 25, tpm: 400000, tier: 1, judge_ok: true}
-  - {id: kilo_flash, kind: freellmapi, model: "liquid/lfm-2.5-2.6b:free", base_url: "https://api.kilo.ai/api/gateway",
-     rpm: 25, tpm: 400000, tier: 2, judge_ok: true}
-  - {id: llm7, kind: freellmapi, model: "GLM-5.3-Flash", base_url: "https://api.llm7.io/v1",
-     rpm: 8, tpm: 120000, tier: 2, judge_ok: true}
+  - {id: kilo_code, kind: freellmapi, model: "cohere/north-mini-code:free", base_url: "https://api.kilo.ai/api/gateway",
+     max_tokens: 3000, rpm: 10, tpm: 300000, tier: 1, judge_ok: true}
+  - {id: llm7, kind: freellmapi, model: "mistral-Nemo-Instruct-2407", base_url: "https://api.llm7.io/v1",
+     max_tokens: 400, rpm: 5, tpm: 120000, tier: 2, judge_ok: true}
   - {id: local, kind: ollama, model: "llama3.1:8b", rpm: 60, tpm: 999999, tier: 9, judge_ok: false}
 router:
   strategy: weighted_health
