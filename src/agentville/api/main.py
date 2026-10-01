@@ -110,6 +110,9 @@ def get_world(world_id: str) -> dict[str, Any]:
 
 @app.post("/api/v1/worlds/{world_id}/run", dependencies=[Depends(auth)])
 def run_world(world_id: str, body: RunReq) -> dict[str, Any]:
+    from sqlalchemy import update
+
+    from agentville.db.models import World as WorldRow
     from agentville.engine.mocks import MockMind
     from agentville.engine.persistence import load_world, save_snapshot, set_world_status
     from agentville.engine.scheduler import Scheduler
@@ -125,6 +128,7 @@ def run_world(world_id: str, body: RunReq) -> dict[str, Any]:
             s.commit()
         save_snapshot(s, w)
         set_world_status(s, world_id, "paused")
+        s.execute(update(WorldRow).where(WorldRow.id == world_id).values(tick=w.tick))
         s.commit()
         return {"run_id": f"{world_id}@{w.tick}", "ticks": body.ticks, "event_hash": w.event_hash[:12]}
     except Exception as e:  # noqa: BLE001
