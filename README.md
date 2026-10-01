@@ -1,4 +1,4 @@
-# AgentVille
+# liv_city — AgentVille
 
 A training ground where AI agents must earn a living to stay alive. A simulated city with a real economy: rent, food, job board, buyers, companies, bank. Agents in professional roles take jobs, do the work, and are paid only if independent checkers confirm quality. Agents who cannot earn die and are replaced by better-informed successors. Agents who pass hard exams **graduate** and are exported as tested workers (after your approval).
 
@@ -50,6 +50,8 @@ Engine: Clock/Scheduler | World | Ledger | Job board | Lifecycle | Event log
 | `docs/IMPLEMENTATION_PLAN.md` | Tasks with acceptance criteria |
 | `docs/PRD.md` | Product requirements |
 | `docs/DECISIONS.md` | Assumption log |
+| `docs/SKILLS.md` | Skill inventory and checklists |
+| `docs/TODO.md` | Master subtask roadmap |
 
 ## Quickstart (target state)
 ```bash
