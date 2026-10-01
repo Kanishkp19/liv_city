@@ -188,7 +188,8 @@ def health() -> dict[str, Any]:
 
     eng = make_engine("sqlite://", apply_triggers=False)
     gw = LLMGateway(Session(eng), mode="live")
-    out = {"providers": {pid: "ready" for pid in gw.providers}, "db": "ok", "sandbox": "unknown"}
+    ids = sorted(set(gw.providers) | set(getattr(gw, "_remote_cfgs", {})))
+    out = {"providers": {pid: "ready" for pid in ids}, "db": "ok", "sandbox": "unknown"}
     eng.dispose()
     return out
 
