@@ -31,3 +31,10 @@ down:
 
 clean:
 	rm -rf data .pytest_cache .mypy_cache .ruff_cache dist
+
+branch:      ## create standard feature branch from docs/TODO.md: TASK=6.26
+	@test -n "$(TASK)" || (echo "usage: make branch TASK=6.26"; exit 1)
+	@bash scripts/new_task_branch.sh $(TASK)
+
+issues:      ## seed remaining roadmap tasks to GitHub: requires gh auth login
+	@bash scripts/seed_github_issues.sh

@@ -1,0 +1,67 @@
+name: Roadmap Task
+description: Track and implement a planned task from docs/TODO.md
+title: "[Task]: T<id> - <Title>"
+labels: ["enhancement", "roadmap"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template when tracking or submitting work for planned items from [docs/TODO.md](docs/TODO.md).
+  - type: dropdown
+    id: phase
+    attributes:
+      label: Phase
+      description: Which phase does this task belong to?
+      options:
+        - "Phase 6: API and Control Room (UI Polish)"
+        - "Phase 8: Scale, Postgres & Analytics"
+        - "Phase 3: Docker Sandbox & Hardening"
+        - "Phase 7: Web Study, Exams & Export"
+        - "Other"
+    validations:
+      required: true
+  - type: input
+    id: task_id
+    attributes:
+      label: Task ID
+      description: e.g., T6.26, T8.6
+      placeholder: "T6.26"
+    validations:
+      required: true
+  - type: textarea
+    id: specification
+    attributes:
+      label: Specification & Source Documentation
+      description: Reference sections from docs (e.g., UIUX_BRIEF.md §4.2, TRD.md §10).
+      placeholder: "Src: docs/UIUX_BRIEF.md S4.2 - Inspector Timeline tab"
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: Acceptance Criteria & Scope
+      description: What must be verified for this task to be considered complete?
+      placeholder: "- Chronological event stream for selected agent\n- Rows expand to show raw event payload JSON\n- Category filters (jobs, vitals, LLM decisions)"
+    validations:
+      required: true
+  - type: textarea
+    id: verification_command
+    attributes:
+      label: Verification Command
+      description: Exact CLI command or test command proving acceptance.
+      placeholder: "cd control-room && npm run test && npm run build"
+    validations:
+      required: true
+  - type: checkboxes
+    id: gates
+    attributes:
+      label: Definition of Done Checklist
+      options:
+        - label: Tests written from acceptance criteria and passing (`uv run pytest` / `npm run test`)
+          required: true
+        - label: Typechecks and linting clean (`ruff`, `mypy --strict`, or `tsc`)
+          required: true
+        - label: Fail-closed path tested (errors yield safe no-op or rejection, never default success)
+          required: true
+        - label: [docs/TODO.md](docs/TODO.md) updated with commit reference
+          required: true

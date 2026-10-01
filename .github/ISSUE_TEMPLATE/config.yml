@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Architecture & Specification Docs
+    url: https://github.com/Kanishkp19/liv_city/tree/main/docs
+    about: Review the specifications and invariant rules in docs/ before opening tasks or fixes.
