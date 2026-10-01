@@ -45,10 +45,11 @@ def run(
     world_id: Annotated[str | None, typer.Option()] = None,
     ticks: int = typer.Option(20, help="Number of ticks"),
     mock: str = typer.Option("oracle", help="Mock policy for all agents"),
+    mode: str = typer.Option("mock", help="mind mode: mock | llm (live gateway)"),
     db_url: Annotated[str | None, typer.Option()] = None,
 ) -> None:
-    """Run ticks headless with mock minds (P1)."""
-    from agentville.engine.mocks import MockMind
+    """Run ticks headless (mock or live LLM minds via --mode llm)."""
+    from agentville.engine.mind_factory import build_minds
     from agentville.engine.persistence import load_world, save_snapshot, set_world_status
     from agentville.engine.scheduler import Scheduler
 
@@ -56,7 +57,7 @@ def run(
     try:
         world = load_world(session, world_id) if world_id else _fresh_world(session)
         set_world_status(session, world.id, "running")
-        minds = {aid: MockMind(mock) for aid in world.agents}
+        minds = build_minds(world.agents, session, mode=mode, mock_policy=mock)
         sched = Scheduler(world, session, minds)
         totals = {"payout": 0, "deaths": 0, "passes": 0}
         for _ in range(ticks):

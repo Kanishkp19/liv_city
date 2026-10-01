@@ -1,7 +1,13 @@
+# Live LLM providers (docs/LLM_GATEWAY.md). kilo + llm7 need NO API key (keyless free tiers).
+# Env overrides: FREELLMAPI_URL / FREELLMAPI_KEY (kilo), LLM7_URL / LLM7_API_KEY (llm7),
+# OLLAMA_URL (local). Kilo routes to a free-model pool; llm7 turbo tier is anonymous-access.
 providers:
-  - {id: freellm_a, kind: freellmapi, model: "model-a", rpm: 15, tpm: 200000, tier: 1, judge_ok: true}
-  - {id: freellm_b, kind: freellmapi, model: "model-b", rpm: 10, tpm: 150000, tier: 1, judge_ok: true}
-  - {id: freellm_c, kind: freellmapi, model: "model-c", rpm: 10, tpm: 100000, tier: 2, judge_ok: true}
+  - {id: kilo, kind: freellmapi, model: "openrouter/free", base_url: "https://api.kilo.ai/api/gateway",
+     rpm: 25, tpm: 400000, tier: 1, judge_ok: true}
+  - {id: kilo_flash, kind: freellmapi, model: "liquid/lfm-2.5-2.6b:free", base_url: "https://api.kilo.ai/api/gateway",
+     rpm: 25, tpm: 400000, tier: 2, judge_ok: true}
+  - {id: llm7, kind: freellmapi, model: "GLM-5.3-Flash", base_url: "https://api.llm7.io/v1",
+     rpm: 8, tpm: 120000, tier: 2, judge_ok: true}
   - {id: local, kind: ollama, model: "llama3.1:8b", rpm: 60, tpm: 999999, tier: 9, judge_ok: false}
 router:
   strategy: weighted_health

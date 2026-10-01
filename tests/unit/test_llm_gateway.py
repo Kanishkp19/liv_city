@@ -177,3 +177,131 @@ def test_replay_mode_uses_recorded_and_misses_halt() -> None:
     resp = asyncio.run(gw.call(_req()))
     assert resp.text == '{"action":"noop"}'
     eng.dispose()
+
+
+# --- live provider wiring (hermetic: fakes, no network) ----------------------
+
+from agentville.config import ProviderCfg, ProvidersCfg  # noqa: E402
+from agentville.gateway.llm.providers.remote import EmptyContentError  # noqa: E402
+
+
+def _live_cfg() -> ProvidersCfg:
+    return ProvidersCfg(providers=[
+        ProviderCfg(id="r1", kind="freellmapi", model="m1", base_url="http://x/v1",
+                    rpm=60, tpm=999999, tier=1),
+        ProviderCfg(id="r2", kind="freellmapi", model="m2", base_url="http://x/v1",
+                    rpm=60, tpm=999999, tier=2),
+    ])
+
+
+def _fake(behavior: str):  # noqa: ANN202
+    from agentville.gateway.llm.base import LLMResponse
+
+    class Fake:
+        id = "fake"
+        model = "fake-model"
+
+        def __init__(self, behavior: str) -> None:
+            self._behavior = behavior
+
+        async def complete(self, req: LLMRequest) -> LLMResponse:
+            if self._behavior == "empty":
+                raise EmptyContentError("empty content")
+            if self._behavior == "boom":
+                raise RuntimeError("boom")
+            return LLMResponse(text='{"action":"noop"}', provider="fake", model="fake-model")
+
+    return Fake(behavior)
+
+
+def test_live_providers_route_and_fall_over_empty_content(monkeypatch) -> None:
+    eng, s = _session()
+    monkeypatch.setattr("agentville.gateway.llm.gateway.load_providers", _live_cfg)
+    gw = LLMGateway(s, mode="live")
+    assert set(gw.providers) | set(gw._remote_cfgs) >= {"r1", "r2"}
+    gw.providers["r1"] = _fake("empty")
+    gw.providers["r2"] = _fake("ok")
+    resp = asyncio.run(gw.call(_req(temperature=0.7)))
+    assert resp.text == '{"action":"noop"}'
+
+
+def test_all_live_providers_failing_raises_unavailable(monkeypatch) -> None:
+    eng, s = _session()
+    monkeypatch.setattr("agentville.gateway.llm.gateway.load_providers", _live_cfg)
+    gw = LLMGateway(s, mode="live")
+    gw.providers["r1"] = _fake("boom")
+    gw.providers["r2"] = _fake("boom")
+    with pytest.raises(ProviderUnavailable):
+        asyncio.run(gw.call(_req(temperature=0.7)))
+
+
+def _patch_http(monkeypatch, payload: dict, status: int = 200) -> None:  # noqa: ANN001
+    from agentville.gateway.llm.providers import remote as rem
+
+    class Resp:
+        def __init__(self) -> None:
+            self.status_code = status
+            self.headers = {}
+
+        def json(self) -> dict:
+            return payload
+
+        def raise_for_status(self) -> None:
+            if self.status_code >= 400:
+                raise RuntimeError(f"http {self.status_code}")
+
+    class Client:
+        def __init__(self, **kw: object) -> None:
+            pass
+
+        async def __aenter__(self) -> Client:
+            return self
+
+        async def __aexit__(self, *a: object) -> bool:
+            return False
+
+        async def post(self, url: str, **kw: object) -> Resp:
+            Client.last_url = url
+            return Resp()
+
+    monkeypatch.setattr(rem.httpx, "AsyncClient", Client)
+
+
+def test_remote_provider_base_url_precedence(monkeypatch) -> None:
+    from agentville.gateway.llm.providers.remote import RemoteProvider
+
+    cfg = ProviderCfg(id="p", kind="freellmapi", model="m", base_url="http://explicit/v1",
+                      rpm=10, tpm=10, tier=1)
+    monkeypatch.setenv("FREELLMAPI_URL", "http://envhost:9/v1")
+    p = RemoteProvider(cfg)
+    assert p.base_url == "http://explicit/v1"
+
+    cfg2 = ProviderCfg(id="p2", kind="freellmapi", model="m", rpm=10, tpm=10, tier=1)
+    p2 = RemoteProvider(cfg2)
+    assert p2.base_url == "http://envhost:9/v1"
+
+
+def test_remote_provider_empty_content_raises(monkeypatch) -> None:
+    from agentville.gateway.llm.providers.remote import RemoteProvider
+
+    cfg = ProviderCfg(id="p", kind="freellmapi", model="m", base_url="http://x/v1",
+                      rpm=10, tpm=10, tier=1)
+    _patch_http(monkeypatch, {"choices": [{"message": {"role": "assistant", "content": None}}]})
+    p = RemoteProvider(cfg)
+    with pytest.raises(EmptyContentError):
+        asyncio.run(p.complete(_req(temperature=0.7)))
+
+
+def test_remote_provider_returns_content_and_usage(monkeypatch) -> None:
+    from agentville.gateway.llm.providers.remote import RemoteProvider
+
+    cfg = ProviderCfg(id="p", kind="freellmapi", model="m", base_url="http://x/v1",
+                      rpm=10, tpm=10, tier=1)
+    _patch_http(monkeypatch, {
+        "choices": [{"message": {"role": "assistant", "content": '{"action":"work"}'}}],
+        "usage": {"prompt_tokens": 11, "completion_tokens": 7},
+    })
+    p = RemoteProvider(cfg)
+    resp = asyncio.run(p.complete(_req(temperature=0.7)))
+    assert resp.text == '{"action":"work"}'
+    assert (resp.tokens_in, resp.tokens_out) == (11, 7)

@@ -45,16 +45,19 @@ class LLMGateway:
         cfg = load_providers()
         self.providers: dict[str, Any] = {}
         self._remote_cfgs: dict[str, Any] = {}
+        requested = set(providers) if providers is not None else None
         for p in cfg.providers:
-            if p.kind == "mock" or (providers and p.id in providers):
+            if requested is not None and p.id not in requested:
+                continue
+            if p.kind == "mock":
                 self.providers[p.id] = MockProvider(policy="random_valid")
             else:
                 self._remote_cfgs[p.id] = p  # built lazily on first use
             self.buckets[p.id] = TokenBucket(rpm=p.rpm, tpm=p.tpm)
-        if not self.providers:
+        if not self.providers and not self._remote_cfgs:
             self.providers["mock"] = MockProvider()
             self.buckets["mock"] = TokenBucket(rpm=10_000, tpm=10_000_000)
-        self._order = sorted(self.providers)
+        self._order = sorted(set(self.providers) | set(self._remote_cfgs))
 
     async def call(self, req: LLMRequest) -> LLMResponse:
         """Route one request; logs every attempt including failures."""

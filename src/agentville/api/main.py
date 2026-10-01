@@ -54,6 +54,7 @@ class WorldCreate(BaseModel):
 class RunReq(BaseModel):
     ticks: int = 10
     mock: str = "oracle"
+    mode: str = "mock"  # mock | llm (live LLM via gateway; provider errors noop)
 
 
 class ApprovalReq(BaseModel):
@@ -113,7 +114,7 @@ def run_world(world_id: str, body: RunReq) -> dict[str, Any]:
     from sqlalchemy import update
 
     from agentville.db.models import World as WorldRow
-    from agentville.engine.mocks import MockMind
+    from agentville.engine.mind_factory import build_minds
     from agentville.engine.persistence import load_world, save_snapshot, set_world_status
     from agentville.engine.scheduler import Scheduler
 
@@ -121,7 +122,7 @@ def run_world(world_id: str, body: RunReq) -> dict[str, Any]:
     try:
         w = load_world(s, world_id)
         set_world_status(s, world_id, "running")
-        minds = {aid: MockMind(body.mock) for aid in w.agents}
+        minds = build_minds(w.agents, s, mode=body.mode, mock_policy=body.mock)
         sched = Scheduler(w, s, minds)
         for _ in range(body.ticks):
             sched.run_tick()

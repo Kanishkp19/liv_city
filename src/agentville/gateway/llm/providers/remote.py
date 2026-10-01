@@ -10,18 +10,25 @@ import httpx
 from agentville.gateway.llm.base import LLMRequest, LLMResponse
 
 
+class EmptyContentError(RuntimeError):
+    """Model returned no usable content (e.g. reasoning ate the max_tokens budget)."""
+
+
 class RemoteProvider:
-    """Talks to FREELLMAPI_URL or OLLAMA_URL with the chat/completions shape."""
+    """Talks to an OpenAI-compatible chat/completions endpoint."""
 
     def __init__(self, cfg: Any) -> None:
         self.id = cfg.id
         self.model = cfg.model
         self.kind = cfg.kind
+        explicit = getattr(cfg, "base_url", None)
         if cfg.kind == "ollama":
-            self.base_url = os.environ.get("OLLAMA_URL", "http://localhost:11434") + "/v1"
+            self.base_url = explicit or os.environ.get("OLLAMA_URL", "http://localhost:11434") + "/v1"
             self.api_key = "ollama"
         else:
-            self.base_url = os.environ.get("FREELLMAPI_URL", "http://localhost:3001/v1")
+            self.base_url = explicit or os.environ.get("FREELLMAPI_URL", "http://localhost:3001/v1")
+            if self.base_url.endswith("/"):
+                self.base_url = self.base_url[:-1]
             self.api_key = os.environ.get("FREELLMAPI_KEY", "")
 
     async def complete(self, req: LLMRequest) -> LLMResponse:
@@ -47,7 +54,13 @@ class RemoteProvider:
                 raise RuntimeError("404 model not found")
             r.raise_for_status()
             data = r.json()
-        text = data["choices"][0]["message"]["content"] or ""
+        msg = data["choices"][0]["message"]
+        text = msg.get("content") or ""
+        if not text.strip():
+            # Reasoning models can spend the whole budget on hidden reasoning
+            # and return content=null. Treat as retryable so the router falls
+            # over to a non-reasoning provider.
+            raise EmptyContentError(f"{self.id}/{self.model}: empty content (reasoning ate budget?)")
         usage = data.get("usage", {})
         return LLMResponse(
             text=text, provider=self.id, model=self.model,

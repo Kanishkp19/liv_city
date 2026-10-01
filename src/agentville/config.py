@@ -84,9 +84,12 @@ class Economy(BaseModel):
 
 
 class ProviderCfg(BaseModel):
+    """One LLM provider row (PROVIDERS file); kind selects adapter + env fallbacks."""
+
     id: str
     kind: Literal["freellmapi", "ollama", "mock"]
     model: str
+    base_url: str | None = None  # explicit endpoint wins over env fallback
     rpm: int = Field(ge=1)
     tpm: int = Field(ge=1)
     tier: int
